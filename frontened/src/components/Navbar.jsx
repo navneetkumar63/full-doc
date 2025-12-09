@@ -13,8 +13,11 @@ const Navbar = () => {
         setToken(false)
         localStorage.removeItem('token')
     }
-    const goToAdmin = () => {
-  window.open("http://localhost:5174/", "_blank");
+  //  const goToAdmin = () => {
+ // window.open("http://localhost:5174/", "_blank");
+//};
+ const goToAdmin = () => {
+  window.open("https://doctor-appointment-admin-5je7.onrender.com", "_blank");
 };
 
     
