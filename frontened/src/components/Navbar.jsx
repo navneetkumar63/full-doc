@@ -1,18 +1,21 @@
 import React, { useContext, useState } from 'react'
-//import React  from 'react'
 import {assets} from '../assets/assets'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { AppContext } from '../context/AppContext';
 const Navbar = () => {
    const navigate = useNavigate();
-   const {token,setToken,userData} = useContext(AppContext)
 
-    const [showMenu, setShowMenu]= useState(false)
+   
+   const {token,setToken,userData} = useContext(AppContext)
+   const [showMenu, setShowMenu]= useState(false)
 
     const logout =() =>{
         setToken(false)
         localStorage.removeItem('token')
     }
+    const goToAdmin = () => {
+  window.open("http://localhost:5174/", "_blank");
+};
 
     
   return (
@@ -36,6 +39,13 @@ const Navbar = () => {
                 <li className='py-1'>CONTACT</li>
                 <hr className='border-none outline-none h-0.5 bg-pink-600  w-3/5 m-auto  hidden'/>
             </NavLink>
+        
+  <button
+  onClick={goToAdmin}
+  className="px-4 py-2 bg-pink-600 text-white rounded-full text-sm font-medium shadow-md hover:bg-pink-700 hover:shadow-lg transition-all duration-300"
+>
+   Admin Panel
+</button>
 
         </ul>
         <div>{
@@ -47,16 +57,20 @@ const Navbar = () => {
               <div className='absolute top-0 right-0 pt-14 text-base font-medium text-grey-600 z-20 hidden group-hover:block'>
                 <div className='min-w-48 bg-stone-100 rounded flex flex-col gap-4 p-4'>--
                 <p onClick={()=>navigate('my-profile')} className='hover:text-black cursor-pointer'>My Profile</p>
-                <p onClick={()=>navigate('')} className='hover:text-black cursor-pointer'>My Appointment</p>
+                <p onClick={()=>navigate('my-appointments')} className='hover:text-black cursor-pointer'>My Appointment</p>
                 <p onClick={logout} className='hover:text-black cursor-pointer'>Logout
                 </p>
                 </div>
            </div>
            
             </div>
-            :<button onClick={()=>navigate('/login')} className='bg-pink-400 text-white px-8 py-3 rounded-full font-light hidden md:block '>Create Account</button>
+            :<button  onClick={()=>navigate('/login')} className='bg-pink-400 text-white px-8 py-3 rounded-full font-light hidden md:block '>Create Account</button>
+
+                      
          }
+
          <img onClick={()=>setShowMenu(true)} className='w-6 md:hidden' src={assets.menu_icon}/>
+         
 
          {/*-----------mobile menu------------*/}
          <div className={` ${showMenu ? 'fixed w-full' :'h-0 w-0'} md:hidden right-0 top-0 bottom-0 z-20 overflow-hidden bg-white transition-all` }>
@@ -77,3 +91,4 @@ const Navbar = () => {
 }
 
 export default Navbar
+

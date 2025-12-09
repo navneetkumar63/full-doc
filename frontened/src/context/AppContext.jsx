@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+/*import { createContext, useEffect, useState } from "react";
 import {toast} from 'react-toastify'
 import axios from 'axios'
 
@@ -83,4 +83,107 @@ return(
     </AppContext.Provider>
 )
 }
-export default AppContextProvider
+export default AppContextProvider;
+
+*/
+import { createContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+
+export const AppContext = createContext();
+
+const AppContextProvider = (props) => {
+  const currencySymbol = "$";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  const [doctors, setDoctors] = useState([]);
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [userData, setUserData] = useState(false);
+
+  // ---------------------------
+  // Get Doctors List
+  const getDoctorsData = async () => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/doctor/list`);
+      if (data.success) {
+        setDoctors(data.doctors);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
+  // ---------------------------
+  // Load User Profile
+  const loadUserProfileData = async () => {
+    if (!token) return;
+
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/user/get-profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // <-- FIXED here
+        },
+      });
+
+      if (data.success) {
+        setUserData(data.userData);
+      } else {
+        toast.error(data.message);
+        logout(); // token invalid
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      logout(); // token invalid
+    }
+  };
+
+  // ---------------------------
+  // Logout
+  const logout = () => {
+    setToken("");
+    setUserData(false);
+    localStorage.removeItem("token");
+    delete axios.defaults.headers.common["Authorization"];
+  };
+
+  // ---------------------------
+  // Save token to localStorage & axios default
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      loadUserProfileData();
+    } else {
+      setUserData(false);
+      localStorage.removeItem("token");
+      delete axios.defaults.headers.common["Authorization"];
+    }
+  }, [token]);
+
+  // ---------------------------
+  // Load doctors on mount
+  useEffect(() => {
+    getDoctorsData();
+  }, []);
+
+  const value = {
+    doctors,
+    getDoctorsData,
+    currencySymbol,
+    token,
+    setToken,
+    backendUrl,
+    userData,
+    setUserData,
+    loadUserProfileData,
+    logout,
+  };
+
+  return <AppContext.Provider value={value}>{props.children}</AppContext.Provider>;
+};
+
+export default AppContextProvider;

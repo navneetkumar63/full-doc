@@ -6,6 +6,9 @@ import {v2 as cloudinary} from 'cloudinary'
 import doctorModel from '../models/doctorModel.js'
 import appointmentModel from '../models/appointmentModel.js'
 import razorpay from 'razorpay'
+import crypto from 'crypto';                   //reset password funcatnality
+import nodemailer from 'nodemailer';                //reset password funcatnality
+
 
 // API to register user
 const registerUser = async (req, res) => {
@@ -75,6 +78,11 @@ const loginUser = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+
+
+
+
+
 
 // API to get user profile data
 const getProfile = async (req, res) => {
@@ -237,13 +245,15 @@ const cancelAppointment = async (req, res) => {
 // Gateway Initialize
 //const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
 const razorpayInstance = new razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
+    key_id: "rzp_test_RAR27k5ue4A81d",
+    key_secret: "65pPM23Ly8s1kGu2ey2Z16j0"
 })
+
+
 // API to make payment of appointment using razorpay
 const paymentRazorpay = async (req, res) => {
     try {
-
+console.log("Butom is clicked");
         const { appointmentId } = req.body
         const appointmentData = await appointmentModel.findById(appointmentId)
 
@@ -271,7 +281,29 @@ const paymentRazorpay = async (req, res) => {
 
 
 
+// API to verify payment of razorpay
+const verifyRazorpay = async (req, res) => {
+    try {
+        const { razorpay_order_id } = req.body
+        const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id)
+
+        if (orderInfo.status === 'paid') {
+            await appointmentModel.findByIdAndUpdate(orderInfo.receipt, { payment: true })
+            res.json({ success: true, message: "Payment Successful" })
+        }
+        else {
+            res.json({ success: false, message: 'Payment Failed' })
+        }
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
 
 
 
-export {registerUser,loginUser,getProfile, updateProfile,bookAppointment,listAppointment,cancelAppointment,paymentRazorpay}
+
+
+
+
+export {registerUser,loginUser,getProfile, updateProfile,bookAppointment,listAppointment,cancelAppointment,paymentRazorpay,verifyRazorpay}

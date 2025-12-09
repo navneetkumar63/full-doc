@@ -6,7 +6,6 @@ const RelatedDoctors = ({speciality,docId}) => {
 
     const {doctors} = useContext(AppContext)
     const navigate = useNavigate()
-
     const [relDoc,setRelDoc] = useState([])
 
     useEffect(()=>{
