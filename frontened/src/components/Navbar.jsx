@@ -14,7 +14,7 @@ const Navbar = () => {
         localStorage.removeItem('token')
     }
     const goToAdmin = () => {
-  window.open("http://localhost:5174/", "_blank");
+  window.open("https://doctor-appointment-admin-5je7.onrender.com", "_blank");
 };
 
     
@@ -91,4 +91,5 @@ const Navbar = () => {
 }
 
 export default Navbar
+
 
